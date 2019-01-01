@@ -1,6 +1,6 @@
 # Exploration of Heuristics in Information Retrieval in Applications of Approximate String Similarity
 
-A part of this project resulted in [ACL paper](https://arxiv.org/abs/1811.08129)
+This was my final semester undergrad project. The report is [available here.](https://github.com/pranav-ust/ir-heuristics/blob/master/main.pdf) A part of this project resulted in [ACL paper](https://arxiv.org/abs/1811.08129)
 
 ## Abstract
 
@@ -15,3 +15,7 @@ In order to relate these split ups, we propose a graphical error modelling heuri
 Finally, we propose TAKE curve, a novel feature engineering probabilistic distribution which replaces the prevalent normalization heuristics.
 Taking the advantage of flexibility over the choice of heuristics, we assess the variants on the cognate detection, mutant identification, and isolated spelling correction based problems.
 In the extensive evaluation methods, we found that our designs perform better than prevalent heuristics and are robust against database characteristics.
+
+## Acknowledgements
+
+Superb thanks to my thesis supervisor Prof. Rushi Kumar for helping me out. Thanks to NLP community for providing open-sourced datasets and resources to work on this project.
