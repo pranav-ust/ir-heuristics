@@ -1,6 +1,6 @@
 # Exploration of Heuristics in Information Retrieval in Applications of Approximate String Similarity
 
-This was my final semester undergrad project. The report is [available here.](https://github.com/pranav-ust/ir-heuristics/blob/master/main.pdf) A part of this project resulted in [ACL paper](https://arxiv.org/abs/1811.08129)
+This was my final semester undergrad project. The report is [available here.](https://github.com/pranav-ust/ir-heuristics/blob/master/main.pdf) A part of this project resulted in [ACL paper.](https://arxiv.org/abs/1811.08129)
 
 ## Abstract
 
