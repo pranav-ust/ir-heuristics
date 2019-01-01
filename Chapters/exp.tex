@@ -1,0 +1,122 @@
+\chapter{Experimental Setup} % Chapter title
+%
+\label{ch:experiment}
+We will evaluate our heuristics over three problems: isolated spelling correction, cognate detection and SNP detection.
+All of the hyperparameters of baselines presented in this section are tuned in the mentioned datasets according to their best performances.
+MeTA toolkit \cite{massung2016meta} is employed to build the search engine.
+
+\section{Spelling Correction}
+
+This problem would be tested using four different datasets:
+
+\begin{enumerate}
+	\item \textbf{Conventional English Spelling Evaluation (CESE)}: A collection of 4000 misspellings and their corrections were organized from Fawthrop's contribution in Birkbeck and Wikipedia spelling error corpus \cite{mitton1985birkbeck,wikipedia2017}. 
+	These datasets are considered as the gold standard and are commonly tested by other researchers in the spelling correction. 
+	The dataset is divided into two parts: training set (comprises of 3000 words) and test set (comprises of 1000 words).
+	
+	\item \textbf{Low Training Set Evaluation (LTSE)}: We simulated 50000 English misspellings probabilistically. 
+	This dataset was then divided into two parts: training set (comprises of 5 words) and test set (comprises of 49995 words). 
+	This dataset is constructed to assess how algorithm behaves with less training data (LT).
+	
+	\item \textbf{Corrupted Label Evaluation (CLE)}: We simulated 50000 English misspellings probabilistically. 
+	This dataset was then divided into two parts: training set (comprises of 40000 words) and test set (comprises of 10000 words). 
+	From the 40000 words, we mislabeled 20000 of them randomly.
+	This dataset is constructed to check the robustness of the algorithms.
+	
+	\item \textbf{Hindi Spelling Evaluation (HSE)}: A collection of 5000 Hindi errors were taken (error corpus constructed by ourselves). 
+	The dataset is divided into two parts: training set (comprises of 4000 words) and test set (comprises of 1000 words). 
+	We used the technique called \textit{varn-viched} to tokenize the split the Hindi words into individual k-grams which is analogous to letter splitting technique in Roman languages. 
+	
+\end{enumerate}
+
+We have chose five baselines for the evaluation purposes : a brute-force looped method \cite{norvig2007write}, weighted longest common subsequence \cite{islam2009real}, finite state transducer \cite{pirinen2010finite}, basic split-up (BREAK-0) with Jaccard similarity and skip-grams \cite{jarvelin2007s}.
+
+\begin{table}[htp]
+	\centering
+	
+	\caption{Test dataset MRR results for spelling correction evaluation}
+	\resizebox{0.7 \textwidth}{!}{%
+		\begin{tabular}{@{}l|llll@{}}
+			\toprule
+			\multicolumn{1}{c|}{\textbf{Algorithm Applied}} & \multicolumn{1}{c}{\textbf{CESE}} & \multicolumn{1}{c}{\textbf{LTSE}} & \multicolumn{1}{c}{\textbf{CLE}} & \multicolumn{1}{c}{\textbf{HSE}} \\ \midrule
+			Brute-force \cite{norvig2007write} & 68\% & 70\% & 71\% & 38\% \\
+			LCS \cite{islam2009real} & 61\% & 59\% & 52\% & 23\% \\
+			FST \cite{pirinen2010finite} & 81\% & 22\% & 19\% & 31\% \\
+			BREAK-0 + Jaccard & 63\% & 68\% & 67\% & 35\% \\
+			Skip-grams \cite{jarvelin2007s} & 65\% & 70\% & 68\% & 29\% \\ \midrule
+			BREAK-0 + Dirichlet & 70\% & 65\% &  69\% & 66\% \\
+			BREAK-0 + BM25 & 69\% & 70\%  & 68\% & 64\% \\
+			BREAK-2 + Dirichlet & 72\% & 72\% & 69\% & 68\% \\
+			BREAK-2-Off + Dirichlet & 75\% & 76\% & 71\% & 70\% \\
+			BREAK-2 + TAKE + BM25 & 78\% & \textbf{79\%} & \textbf{74\%} & 75\% \\
+			BREAK-2 + TAKE + MAKE + BM25 & \textbf{86\%} & 38\% & 35\% & \textbf{84\% }\\ \bottomrule
+		\end{tabular}%
+	}
+	\label{spell-table}
+\end{table}
+
+
+We used MRR (Mean Reciprocal Rank) here as our evaluation metric, since each misspelling had only one solution in our dataset. 
+Aspell \cite{atkinson_2016} with the dictionary size of 60 has been used to create the spell-check dictionary for the English evaluation. 
+
+The results in Table \ref{spell-table} show that BREAK-2 with BM25 based length penalty (TAKE) and graphical error models (MAKE) performed the best in conventional English and Hindi spelling evaluation. 
+BREAK-2 combined with the BM25 based length penalty (MAKE) performed the best in the corrupted label and low training dataset size evaluation, as these techniques are robust against data abnormalities.
+
+
+\section{Cognate Detection}
+
+This experiment was performed on the dataset and evaluation scheme proposed by Taraka \cite{rama2015automatic}.
+In this dataset, the word pairs are organized into cognate class numbers. 
+Positive and negative labels are assigned to the same and different class numbers respectively.
+For comparisons, we chose SVM classifier for cognates detection as proposed by Houndrak et al. \cite{kondrak2006evaluation} and Naive Bayes based features as proposed by Alina et al. \cite{ciobanu2014building}
+The dataset was divided in the ratio of 3:1 for the training and testing purposes.
+
+\begin{table}[htp]
+	\centering
+	\caption{Test dataset results for cognate detection experiment}
+	\resizebox{0.6 \textwidth}{!}{%
+		\begin{tabular}{@{}l|ll@{}}
+			\toprule
+			\multicolumn{1}{c|}{\textbf{\textbf{Algorithm Applied}}} & \multicolumn{1}{c}{\textbf{P@1}} & \multicolumn{1}{c}{\textbf{F1}} \\ \midrule
+			Naive Bayes \cite{ciobanu2014building} & 0.75 & 0.4 \\
+			SVM \cite{kondrak2006evaluation} & 0.78 & 0.46 \\ \midrule
+			BREAK-2-Off + Dirichlet & 0.76 & 0.42 \\
+			BREAK-2 + MAKE + TAKE + BM25 & \textbf{0.80} & \textbf{0.48} \\ \bottomrule
+		\end{tabular}%
+	}
+	\label{cognate-table}
+\end{table}
+
+Precision at $k = 1$ and F1 scores are used to evaluate the algorithms used in this experiment.
+The results in Table \ref{cognate-table} show that BREAK-2 with MAKE and TAKE performed slightly better than the other results.
+
+\section{SNP Detection}
+
+This is a new problem for detecting SNPs (single-nucleotide polymorphism) which corresponds to genetic mutant identification suggested by Nguyen et al \cite{nguyen2016multiple}.
+For this experiment, we simulated two datasets.
+The dataset D1 contained 10000 genomes. 
+Each genome sequence comprises length of 500-600 base pairs for the artificial DNA sequences. 
+10 distinct mutations were created for each genome sequence. 
+Then the dataset was populated with $99 \%$ noise, resulting in total size of D1 as 1 million genome sequences.
+The dataset D2 had 50000 protein sequences with length around 1000-1500 base pairs, which was populated with $99.9 \%$ noise, resulting in total size of D2 as 1.5 million protein sequences. 
+The D2 dataset was artificially created with simulating the random patterns and mutations caused by the 21 proteins.
+The BREAK-0 with Jaccard similarity is chosen as a baseline and we used MinDist proximity heuristic clubbed with BM25 and BREAK-0 \cite{tao2007exploration}, to compare our results.
+\begin{table}[htp]
+	\centering
+	\caption{Results for gene mutant detection simulation experiment}
+	\resizebox{0.9 \textwidth}{!}{%
+		\begin{tabular}{@{}l|llll@{}}
+			\toprule
+			\multicolumn{1}{c|}{\textbf{Algorithm}} & \multicolumn{1}{c}{\textbf{D1 (MRR)}} & \multicolumn{1}{c}{\textbf{D1 (NDCG)}} & \textbf{D2 (MRR)} & \textbf{D2 (NDCG)} \\ \midrule
+			BREAK-0 + Jaccard & 0.33 & 0.16 & 0.31 & 0.12 \\
+			MinDist + BM25 + BREAK-0  & 0.55 & 0.40 & 0.49 & 0.38 \\ \midrule
+			BREAK-n + Dirichlet & 0.99 & 0.98 & 0.95 & 0.94 \\ \bottomrule
+		\end{tabular}%
+	}
+	\label{mutation-table}
+\end{table}
+
+MRR and NDCG (Normalized Discounted Cumulative Gain) are used as metrics for our experiment. 
+Table \ref{mutation-table} shows that BREAK-n with Dirichlet outperformed others. 
+We used 41 and 83 anchor points for D1 and D2 respectively which were obtained by experimentation on cross-validation dataset.
+This shows that our heuristics are scalable and works well with larger datasets.

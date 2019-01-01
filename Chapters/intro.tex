@@ -1,0 +1,85 @@
+\chapter{Introduction} % Chapter title
+%
+\label{ch:intro}
+
+Approximate string similarity problems deal with returning of a ranked list of closest possible strings against the given query string.
+Some representatives of this problem are,
+\begin{enumerate}
+	\item \textbf{isolated spelling correction} which involves returning a list of suggestions for a misspelled word \cite{kukich1992techniques},
+	\item \textbf{genetic mutant identification} which is the process of returning a set of possible closest mutations of the given genome sequence \cite{nguyen2016multiple},
+	\item \textbf{cognate detection} which deals with identification of the words which have same linguistic derivation \cite{rama2015automatic}.
+\end{enumerate} 
+
+On the other hand, information retrieval models portray the idea of relevance, so that one can score a document with a given respective query.
+There are prevailing models like BM25 \cite{bm25}, Dirichlet-prior smoothing \cite{dirich}, PL2 \cite{PL2} which are commonly employed mainly in search engine application.
+
+This paper deals with the intersection between these two areas which is largely under-explored in the literature.
+We show how the notion of retrieval can be incorporated in the approximate string similarity problem by breaking a word into small units.
+Furthermore, Nguyen et al. \cite{nguyen2016multiple} have stated that broken words are more practical to query large databases of sequences as compared to conventional methods.
+Additionally, retrieval models provide a variety of alternative heuristics which can be chosen for the desired application area \cite{Fang}.
+Taking these advantages of flexibility of these models, the combination of approximate string similarity operations with information retrieval systems could be beneficial in many cases.
+
+Hence the objectives of this paper are:
+\begin{enumerate}
+	\item To explain the chunking methods and give the sequential notion. This paper demonstrates the BREAK algorithm which breaks a word into smaller pieces.
+	First, we show a trivial chunking method BREAK-0. However, just separating a word is insufficient. So we propose some variants which contain sequential information, like BREAK-1, BREAK-2 and BREAK-Off. Then we propose BREAK-n which would not only generalize these variants but also would operate seamlessly for really long terms like biological sequences (Section 2).
+	\item To model a graphical error identification algorithm which probabilistically relates the split sets between query and the document. For this purpose, we proposed the algorithm MAKE over the expansion sets generated. (Section 3).
+	\item To design a generalized feature engineering curve which maximizes the proximity between query and document. We proposed TAKE curve, an inverse Gaussian function which models between the extremities of the limits generated. (Section 4).
+	\item To show how retrieval models and approximate string similarity based algorithms would come together. The variants of proposed heuristics are tested elaborately in applications of approximate string similarity problem like cognate detection, mutant identification and isolated spelling correction (Section 5). 
+	We show that our algorithms are robust against database characteristics.
+\end{enumerate}
+
+
+\section{Related Work}
+
+\begin{table}[h]
+	\centering
+	\label{related}
+	\caption{A brief overview of related topics and prevalent methods used in approximate string similarity. Some of these methods are used as baselines in the evaluation section.}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{|l|l|l|}
+			\hline
+			\multicolumn{1}{|c|}{\textbf{Problem Domain}}                                            & \multicolumn{1}{c|}{\textbf{Prevalent Methods}}       & \multicolumn{1}{c|}{\textbf{Source}}                                                              \\ \hline
+			\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Isolated Spelling \\ Correction\end{tabular}} & Brute-force candidate generation method    & \cite{norvig2007write}                                                                            \\ \cline{2-3} 
+			& Weighted longest common subsequence search & \cite{islam2009real}                                                                              \\ \cline{2-3} 
+			& Usage of subsequences (s-grams)            & \begin{tabular}[c]{@{}l@{}}\cite{jarvelin2007s}\\ \cite{keskustalo2003non}\end{tabular}           \\ \cline{2-3} 
+			& Finite state automata based corrections    & \cite{pirinen2010finite}                                                                          \\ \hline
+			\multirow{2}{*}{Cognate Detection}                                                       & Using Naive Bayes                          & \begin{tabular}[c]{@{}l@{}}\cite{kondrak2006evaluation}\\ \cite{inkpen2005automatic}\end{tabular} \\ \cline{2-3} 
+			& Using SVM                                  & \begin{tabular}[c]{@{}l@{}}\cite{ciobanu2014building}\\ \cite{rama2015automatic}\end{tabular}     \\ \hline
+			\multirow{6}{*}{\begin{tabular}[c]{@{}l@{}}Gene Mutant \\ Identification\end{tabular}}   & Dot matrix alignment                       & \cite{huang2004rapid}                                                                             \\ \cline{2-3} 
+			& Needleman-Wunsch alignment                 & \cite{needleman1970general}                                                                       \\ \cline{2-3} 
+			& Smith-Waterman alignment                   & \cite{smith1981identification}                                                                    \\ \cline{2-3} 
+			& FASTA tool                                 & \cite{pearson19905}                                                                               \\ \cline{2-3} 
+			& BLAST tool                                 & \cite{kent2002blat}                                                                               \\ \cline{2-3} 
+			& T-COFFEE                                   & \cite{notredame2000t}                                                                             \\ \hline
+		\end{tabular}%
+	}
+\end{table}
+
+Isolated spelling correction involves returning a list of suggestions for a misspelled word.
+Some of the prevalent techniques include brute-force candidate generation method \cite{norvig2007write}, weighted longest common subsequence search \cite{islam2009real}, usage of subsequences \cite{jarvelin2007s,keskustalo2003non}, and finite state automata based corrections \cite{pirinen2010finite}.
+Genetic mutant identification is the process of returning a set of possible closest mutations of the given genome sequence.
+Many biological sequence alignment algorithms like dot-matrix \cite{huang2004rapid}, Needleman-Wunsch \cite{needleman1970general}, Smith-Waterman \cite{smith1981identification} and tools like FASTA \cite{pearson19905}, BLAST \cite{kent2002blat}, T-COFFEE \cite{notredame2000t} are commonly employed for this problem.
+Cognates are the words existing in different languages but they have a common origin.
+For example, the word \textit{night} in English and \textit{nuit} in French are a pair of cognates which have a Proto-Germanic origin.
+Cognate detection is the problem of identification of such pairs within a cross-language corpus.
+Current machine learning based approaches include SVM and Naive-Bayes classifiers which distinguishes whether a pair is cognate or not. \cite{kondrak2006evaluation,inkpen2005automatic,ciobanu2014building,rama2015automatic}
+
+Probabilistic retrieval functions are frequently used in search engines for returning a ranked list of relevant documents \cite{zhai2016text}. 
+These functions provide a variety of heuristics which can be chosen for the desired application area \cite{Fang}.
+Taking this advantage of flexibility of these functions, we propose modified versions of these functions for the applications in approximate string similarity problems.
+
+Zhai et al. \cite{zhai2016text} lay down the in-depth analysis of variety of ranking functions used in information retrieval. Common features used in the information retrieval are term frequency, inverse document frequency and length normalization. TF-IDF (Term Frequency and Inverse Document Frequency) is a prevalent vector-space information retrieval technique. It balances the similarity of the query and the document, and penalizes the common terms \cite{tfidf}. Pivoted document length normalization with TF-IDF helps to reward shorter documents \cite{pl}. Okapi BM25 is a complex version of pivoted length normalization and it is the prevailing state-of-the-art retrieval method \cite{bm25}. PL2 is a retrieval model based on divergence from randomness of the query term frequency \cite{PL2}. Dirichlet Prior based retrieval is based on language modeling  where the smoothing function is derived from Dirichlet distribution \cite{dirich}. MPtf2ln and MDtf2ln are improvements on previous methods and more elaborate ranking functions which balances the extremities of normalization effects \cite{Fang}. They also lay down certain guidelines to evaluate the behavior of the ranking functions.
+
+\section{System Architecture}
+
+The setup of the project is similar to the information retrieval system.
+Here, the given strings are processed with our proposed chunking methods.
+The given chunks are stored in the inverted index in the form of the linked lists.
+This inverted index is processed with the double-barrel based cache which is developed according to the term frequency of the chunks.
+The query is given and with the help of the ranking function's heapsort, the top relevant documents are collected and displayed to the user.
+
+
+A lot of algorithms have been proposed in the literature to solve approximate string similarity problem, however none of them makes use of probabilistic retrieval functions.
+Nyugen et al. \cite{nguyen2016multiple} have stated that word split-ups are more practical to query large databases of sequences as compared to conventional methods. 
+Thus, combination of approximate string similarity operations with information retrieval systems could be beneficial in these cases.

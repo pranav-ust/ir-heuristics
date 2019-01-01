@@ -1,0 +1,41 @@
+% Chapter 2
+
+\chapter{Experimental Setup} % Chapter title
+
+\label{ch:experim} % For referencing the chapter elsewhere, use \autoref{ch:examples} 
+
+%----------------------------------------------------------------------------------------
+
+A collection of 1322 misspellings and their corrections were obtained from Fawthrop's contribution in Birkbeck spelling error corpus \cite{mitton1985birkbeck}.
+The dataset is divided into two parts: training set (comprises of 930 words) and test set (comprises of 392 words).
+The hyperparameters would be tuned on the training set and then it would be tested on the test set.
+Aspell dictionary \cite{atkinson2006gnu} is used as the spell-check dictionary. 
+The spellings from the aspell dictionary serve as the document match for the information retrieval system.
+Every query (misspelling) would have only one relevant document (correct spelling) to match.
+Hence we would use MRR (Mean Reciprocal Rank) as our evaluation metric.
+
+
+MeTA toolkit \cite{massung2016meta} is employed to build the search engine for the spell variants.
+
+Following k-gram variants are employed in this experiment:
+\begin{enumerate}
+	\item Basic k-gram split
+	\item Double-ended positional k-gram split
+	\item Double-ended positional k-gram split with offsets
+\end{enumerate}
+The units $k = 2$, $k = 3$, and $k = 2$ with $3$ (union of $k = 2$ and $k = 3$ sets) are chosen.
+Following ranking functions are employed in this experiment:
+\begin{enumerate}
+	\item TF-IDF, no hyperparameters \cite{tfidf}
+	\item Okapi BM25 with hyperparameters $b$ and $k$ \cite{bm25}
+	\item Bayesian smoothing with a Dirichlet prior with hyperparameter $\mu$ \cite{dirich}
+\end{enumerate}
+The experimental results are summarized in Table \ref{split}.
+
+We used MRR (Mean Reciprocal Rank) here as our evaluation metric, since each misspelling had only one solution in our dataset.
+
+\begin{equation*}
+	MRR = \frac{1}{s} \sum_{i = 1}^s \frac{1}{rank_i}
+\end{equation*}
+
+Here $s$ is the size of the dataset and $rank_i$ is the position of the rank for the first relevant document of the $i^{th}$ query.
